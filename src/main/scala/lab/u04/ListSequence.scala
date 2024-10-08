@@ -5,6 +5,7 @@ object ListSequence extends SequenceADT:
   opaque type Sequence[A] = List[A]
 
   override def cons[A](head: A, tail: Sequence[A]): Sequence[A] = head :: tail
+
   override def nil[A] = List.empty[A]
 
   override def map[A, B](l: Sequence[A], f: A => B): Sequence[B] = l.map(f)

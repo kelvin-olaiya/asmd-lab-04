@@ -21,9 +21,9 @@ scalacOptions ++= Seq("Null").map(wart =>
 
 Compile / doc / target := baseDirectory.value / "api"
 
-lazy val hello = (project in file("."))
+lazy val asmd_lab_04 = (project in file("."))
   .settings(
-    name := "Hello",
+    name := "Asmd Lab 04",
     scalaVersion := "3.5.1",
     libraryDependencies ++= scalaTestBundle,
     libraryDependencies ++= cucumberBundle,

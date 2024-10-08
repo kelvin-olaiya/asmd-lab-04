@@ -2,30 +2,10 @@ package lab.u04
 
 object SimpleSequence extends SequenceADT:
 
-  extension [A](l: Sequence[A])
-    override def head: A = l match
-      case Cons(h, _) => h
-      case Nil()      => throw new NoSuchElementException("head of empty list")
-    override def tail: Sequence[A] = l match
-      case Cons(_, t) => t
-      case _          => l
-    def isEmpty: Boolean = l match
-      case Nil() => true
-      case _     => false
-
   private enum SimpleSequenceImpl[A]:
     case Cons(head: A, tail: SimpleSequenceImpl[A])
     case Nil()
-
-  object Cons:
-    def unapply[A](seq: Sequence[A]): Option[(A, Sequence[A])] = seq match
-      case SimpleSequenceImpl.Cons(h, t) => Some((h, t))
-      case _                             => None
-
-  object Nil:
-    def unapply[A](seq: Sequence[A]): Boolean = seq match
-      case SimpleSequenceImpl.Nil() => true
-      case _                        => false
+  import SimpleSequenceImpl.*
 
   opaque type Sequence[A] = SimpleSequenceImpl[A]
 
@@ -73,3 +53,14 @@ object SimpleSequence extends SequenceADT:
   override def drop[A](l: Sequence[A], n: Int): Sequence[A] = l match
     case Cons(_, t) if n > 0 => drop(t, n - 1)
     case _                   => l
+
+  extension [A](l: Sequence[A])
+    override def head: A = l match
+      case Cons(h, _) => h
+      case Nil()      => throw new NoSuchElementException("head of empty list")
+    override def tail: Sequence[A] = l match
+      case Cons(_, t) => t
+      case _          => l
+    def isEmpty: Boolean = l match
+      case Nil() => true
+      case _     => false
