@@ -53,14 +53,3 @@ object SimpleSequence extends SequenceADT:
   override def drop[A](l: Sequence[A], n: Int): Sequence[A] = l match
     case Cons(_, t) if n > 0 => drop(t, n - 1)
     case _                   => l
-
-  extension [A](l: Sequence[A])
-    override def head: A = l match
-      case Cons(h, _) => h
-      case Nil()      => throw new NoSuchElementException("head of empty list")
-    override def tail: Sequence[A] = l match
-      case Cons(_, t) => t
-      case _          => l
-    def isEmpty: Boolean = l match
-      case Nil() => true
-      case _     => false

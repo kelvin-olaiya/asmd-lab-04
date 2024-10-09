@@ -30,8 +30,3 @@ object ListSequence extends SequenceADT:
   override def distinct[A](l: Sequence[A]): Sequence[A] = l.distinct
 
   override def drop[A](l: Sequence[A], n: Int): Sequence[A] = l.drop(n)
-
-  extension [A](l: Sequence[A])
-    def head: A = l.head
-    def tail: Sequence[A] = l.tail
-    def isEmpty: Boolean = l.isEmpty

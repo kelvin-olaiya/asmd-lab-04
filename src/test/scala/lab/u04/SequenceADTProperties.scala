@@ -18,60 +18,39 @@ trait SequenceADTProperties[T](
     Gen.listOf(arbitrary[T]).map(_.foldRight(nil[T])(cons))
   )
 
-  property("Map axioms") = forAll: (seq: Sequence[T], f: T => T) =>
-    seq match
-      case seq if !seq.isEmpty =>
-        map(seq, f) == cons(f(seq.head), map(seq.tail, f))
-      case seq => map(seq, f) == nil[T]
+  property("Map axioms") = forAll: (h: T, t: Sequence[T], f: T => T) =>
+    map(nil[T], f) == nil[T]
+    map(cons(h, t), f) == cons(f(h), map(t, f))
 
-  property("Filter axioms") = forAll: (seq: Sequence[T], p: T => Boolean) =>
-    seq match
-      case seq if !seq.isEmpty =>
-        filter(seq, p) == (if p(seq.head) then
-                             cons(seq.head, filter(seq.tail, p))
-                           else filter(seq.tail, p))
-      case seq => filter(seq, p) == nil[T]
+  property("Filter axioms") = forAll: (h: T, t: Sequence[T], p: T => Boolean) =>
+    filter(nil[T], p) == nil[T]
+    filter(cons(h, t), p) == (if p(h) then cons(h, filter(t, p))
+                              else filter(t, p))
 
-  property("Concat axioms") = forAll: (seq1: Sequence[T], seq2: Sequence[T]) =>
-    seq1 match
-      case seq if !seq.isEmpty =>
-        concat(seq1, seq2) == cons(seq.head, concat(seq.tail, seq2))
-      case seq => concat(seq1, seq2) == seq2
+  property("Concat axioms") = forAll: (h: T, t: Sequence[T], l: Sequence[T]) =>
+    concat(nil[T], l) == l
+    concat(cons(h, t), l) == cons(h, concat(t, l))
 
   property("FlatMap axioms") = forAll:
-    (seq: Sequence[T], f: T => Sequence[T]) =>
-      seq match
-        case seq if !seq.isEmpty =>
-          flatMap(seq, f) == concat(f(seq.head), flatMap(seq.tail, f))
-        case seq => flatMap(seq, f) == nil[T]
+    (h: T, t: Sequence[T], f: T => Sequence[T]) =>
+      flatMap(nil[T], f) == nil[T]
+      flatMap(cons(h, t), f) == concat(f(h), flatMap(t, f))
 
   property("FoldLeft axioms") = forAll:
-    (seq: Sequence[T], init: T, f: (T, T) => T) =>
-      seq match
-        case seq if !seq.isEmpty =>
-          foldLeft(seq, init, f) == foldLeft(seq.tail, f(init, seq.head), f)
-        case seq => foldLeft(seq, init, f) == init
+    (h: T, t: Sequence[T], init: T, f: (T, T) => T) =>
+      foldLeft(nil[T], init, f) == init
+      foldLeft(cons(h, t), init, f) == foldLeft(t, f(init, h), f)
 
   property("Collect axioms") = forAll:
-    (seq: Sequence[T], p: T => Boolean, f: T => T) =>
-      seq match
-        case seq if !seq.isEmpty =>
-          collect(seq, p, f) == (if p(seq.head) then
-                                   cons(f(seq.head), collect(seq.tail, p, f))
-                                 else collect(seq.tail, p, f))
-        case seq => collect(seq, p, f) == nil[T]
+    (h: T, t: Sequence[T], p: T => Boolean, f: T => T) =>
+      collect(nil[T], p, f) == nil[T]
+      collect(cons(h, t), p, f) == (if p(h) then cons(f(h), collect(t, p, f))
+                                    else collect(t, p, f))
 
-  property("Distinct axioms") = forAll: (seq: Sequence[T]) =>
-    seq match
-      case seq if !seq.isEmpty =>
-        distinct(seq) == cons(
-          seq.head,
-          distinct(filter(seq.tail, _ != seq.head))
-        )
-      case seq => distinct(seq) == nil[T]
+  property("Distinct axioms") = forAll: (h: T, t: Sequence[T]) =>
+    distinct(nil[T]) == nil[T]
+    distinct(cons(h, t)) == cons(h, distinct(filter(t, _ != h)))
 
-  property("Drop axioms") = forAll: (seq: Sequence[T], n: Int) =>
-    (seq, n) match
-      case (seq, n) if n > 0 && !seq.isEmpty =>
-        drop(seq, n) == drop(seq.tail, n - 1)
-      case _ => drop(seq, n) == seq
+  property("Drop axioms") = forAll: (h: T, t: Sequence[T], n: Int) =>
+    drop(cons(h, t), n) == (if n > 0 then drop(t, n - 1) else cons(h, t))
+    drop(nil[T], n) == nil[T]

@@ -19,10 +19,3 @@ trait SequenceADT:
   def collect[A, B](l: Sequence[A], p: A => Boolean, f: A => B): Sequence[B]
   def distinct[A](l: Sequence[A]): Sequence[A]
   def drop[A](l: Sequence[A], n: Int): Sequence[A]
-  /*
-   * extension methods
-   */
-  extension [A](l: Sequence[A])
-    def head: A
-    def tail: Sequence[A]
-    def isEmpty: Boolean
